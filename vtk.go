@@ -174,6 +174,14 @@ const (
 
 type Modifier C.vtk_modifiers
 
+type EventWithModifiers interface {
+	Mods() Modifier
+}
+
+func HasMod(e EventWithModifiers, m Modifier) bool {
+	return Modifier(e.Mods())&m != 0
+}
+
 const (
 	Shift    Modifier = C.VTK_M_SHIFT
 	CapsLock Modifier = C.VTK_M_CAPS_LOCK
@@ -200,17 +208,33 @@ func (k KeyEvent) Mods() Modifier {
 	return Modifier(k.mods)
 }
 
-func (k KeyEvent) Mod(m Modifier) bool {
-	return Modifier(k.mods)&m != 0
+type MouseMoveEvent C.struct_vtk_mouse_move_event
+
+func (m MouseMoveEvent) Mods() Modifier {
+	return Modifier(m.mods)
 }
 
-type MouseMoveEvent C.struct_vtk_mouse_move_event
+func (m MouseMoveEvent) Pos() (x, y float64) {
+	return float64(m.x), float64(m.y)
+}
 
 func (m MouseMoveEvent) Type() EventType {
 	return EventType(m._type)
 }
 
 type MouseButtonEvent C.struct_vtk_mouse_button_event
+
+func (b MouseButtonEvent) Btn() Modifier {
+	return Modifier(b.btn)
+}
+
+func (b MouseButtonEvent) Mods() Modifier {
+	return Modifier(b.mods)
+}
+
+func (m MouseButtonEvent) Pos() (x, y float64) {
+	return float64(m.x), float64(m.y)
+}
 
 func (b MouseButtonEvent) Type() EventType {
 	return EventType(b._type)
