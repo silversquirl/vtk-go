@@ -242,6 +242,10 @@ func (b MouseButtonEvent) Type() EventType {
 
 type ScrollEvent C.struct_vtk_scroll_event
 
+func (s ScrollEvent) Amount() float64 {
+	return float64(s.amount)
+}
+
 func (s ScrollEvent) Type() EventType {
 	return EventType(s._type)
 }
