@@ -1,23 +1,17 @@
 package main
 
-import (
-	"../"
-	"fmt"
-	"os"
-)
+import "../"
 
-func myMain() int {
+func main() {
 	root, err := vtk.New()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return 1
+		panic(err)
 	}
 	defer root.Destroy()
 
 	win, err := root.NewWindow("Hello, world!", 0, 0, 800, 600)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return 1
+		panic(err)
 	}
 	defer win.Destroy()
 
@@ -58,10 +52,4 @@ func myMain() int {
 	})
 
 	win.Mainloop()
-
-	return 0
-}
-
-func main() {
-	os.Exit(myMain())
 }
