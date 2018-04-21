@@ -214,8 +214,8 @@ func (m MouseMoveEvent) Mods() Modifier {
 	return Modifier(m.mods)
 }
 
-func (m MouseMoveEvent) Pos() (x, y float64) {
-	return float64(m.x), float64(m.y)
+func (m MouseMoveEvent) Pos() (x, y int) {
+	return int(m.x), int(m.y)
 }
 
 func (m MouseMoveEvent) Type() EventType {
@@ -232,8 +232,8 @@ func (b MouseButtonEvent) Mods() Modifier {
 	return Modifier(b.mods)
 }
 
-func (m MouseButtonEvent) Pos() (x, y float64) {
-	return float64(m.x), float64(m.y)
+func (m MouseButtonEvent) Pos() (x, y int) {
+	return int(m.x), int(m.y)
 }
 
 func (b MouseButtonEvent) Type() EventType {
