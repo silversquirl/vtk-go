@@ -9,6 +9,7 @@ import "C"
 
 type CCairoT *C.cairo_t
 type Cairo struct{ Cr *C.cairo_t }
+type Pattern struct{ pat *C.cairo_pattern_t }
 
 func (cr Cairo) Save() {
 	C.cairo_save(cr.Cr)
@@ -22,14 +23,19 @@ func (cr Cairo) PushGroup() {
 	C.cairo_push_group(cr.Cr)
 }
 
-// TODO: pop_group
+func (cr Cairo) PopGroup() Pattern {
+	return Pattern{ C.cairo_pop_group(cr.Cr) }
+}
 
 func (cr Cairo) PopGroupToSource() {
 	C.cairo_pop_group_to_source(cr.Cr)
 }
 
 // TODO: set_operator
-// TODO: set_source
+
+func (cr Cairo) SetSource(pat Pattern) {
+	C.cairo_set_source(cr.Cr, pat.pat)
+}
 
 func (cr Cairo) SetSourceRGB(r, g, b float64) {
 	C.cairo_set_source_rgb(cr.Cr, C.double(r), C.double(g), C.double(b))
@@ -177,7 +183,10 @@ func (cr Cairo) PaintWithAlpha(alpha float64) {
 	C.cairo_paint_with_alpha(cr.Cr, C.double(alpha))
 }
 
-// TODO: mask
+func (cr Cairo) Mask(pat Pattern) {
+	C.cairo_mask(cr.Cr, pat.pat)
+}
+
 // TODO: mask_surface
 
 func (cr Cairo) Stroke() {
@@ -249,7 +258,10 @@ func (cr Cairo) ClipExtents() (x1, y1, x2, y2 float64) {
 // vktec suggests using Pango over Cairo's font API so he hasn't wrapped it
 
 // TODO: get_operator
-// TODO: get_source
+
+func (cr Cairo) Source() Pattern {
+	return Pattern{ C.cairo_get_source(cr.Cr) }
+}
 
 func (cr Cairo) Tolerance() float64 {
 	return float64(C.cairo_get_tolerance(cr.Cr))
@@ -297,6 +309,109 @@ func (cr Cairo) Dash() (dashes, offset float64) {
 // TODO: error handling
 // TODO: surface_t API
 // TODO: raster source API
-// TODO: pattern_t API
+
+func PatternCreateRGB(r, g, b float64) Pattern {
+	return Pattern{ C.cairo_pattern_create_rgb(C.double(r), C.double(g), C.double(b)) }
+}
+
+func PatternCreateRGBA(r, g, b, a float64) Pattern {
+	return Pattern{ C.cairo_pattern_create_rgba(C.double(r), C.double(g), C.double(b), C.double(a)) }
+}
+
+// TODO: pattern_create_for_surface
+
+func PatternCreateLinear(x0, y0, x1, y1 float64) Pattern {
+	return Pattern{ C.cairo_pattern_create_linear(C.double(x0), C.double(y0), C.double(x1), C.double(y1)) }
+}
+
+func PatternCreateRadial(x0, y0, r0, x1, y1, r1 float64) Pattern {
+	return Pattern{ C.cairo_pattern_create_radial(C.double(x0), C.double(y0), C.double(r0), C.double(x1), C.double(y1), C.double(r1)) }
+}
+
+func PatternCreateMesh() Pattern {
+	return Pattern{ C.cairo_pattern_create_mesh() }
+}
+
+func (pat Pattern) Destroy() {
+	C.cairo_pattern_destroy(pat.pat)
+}
+
+// TODO: pattern_status
+
+type PatternType C.cairo_pattern_type_t
+const (
+	Solid        PatternType = C.CAIRO_PATTERN_TYPE_SOLID
+	Surface      PatternType = C.CAIRO_PATTERN_TYPE_SURFACE
+	Linear       PatternType = C.CAIRO_PATTERN_TYPE_LINEAR
+	Radial       PatternType = C.CAIRO_PATTERN_TYPE_RADIAL
+	Mesh         PatternType = C.CAIRO_PATTERN_TYPE_MESH
+	RasterSource PatternType = C.CAIRO_PATTERN_TYPE_RASTER_SOURCE
+)
+
+func (pat Pattern) Type() PatternType {
+	return PatternType(C.cairo_pattern_get_type(pat.pat))
+}
+
+func (pat Pattern) AddColorStopRGB(offset, r, g, b float64) {
+	C.cairo_pattern_add_color_stop_rgb(pat.pat, C.double(offset), C.double(r), C.double(g), C.double(b))
+}
+
+func (pat Pattern) AddColorStopRGBA(offset, r, g, b, a float64) {
+	C.cairo_pattern_add_color_stop_rgba(pat.pat, C.double(offset), C.double(r), C.double(g), C.double(b), C.double(a))
+}
+
+func (pat Pattern) MeshBeginPatch() {
+	C.cairo_mesh_pattern_begin_patch(pat.pat)
+}
+
+func (pat Pattern) MeshEndPatch() {
+	C.cairo_mesh_pattern_end_patch(pat.pat)
+}
+
+func (pat Pattern) MeshCurveTo(x1, y1, x2, y2, x3, y3 float64) {
+	C.cairo_mesh_pattern_curve_to(pat.pat, C.double(x1), C.double(y1), C.double(x2), C.double(y2), C.double(x3), C.double(y3))
+}
+
+func (pat Pattern) MeshLineTo(x1, y1 float64) {
+	C.cairo_mesh_pattern_line_to(pat.pat, C.double(x1), C.double(y1))
+}
+
+func (pat Pattern) MeshMoveTo(x1, y1 float64) {
+	C.cairo_mesh_pattern_move_to(pat.pat, C.double(x1), C.double(y1))
+}
+
+func (pat Pattern) MeshSetControlPoint(pointNum uint, x, y float64) {
+	C.cairo_mesh_pattern_set_control_point(pat.pat, C.uint(pointNum), C.double(x), C.double(y))
+}
+
+func (pat Pattern) MeshSetCornerColorRGB(cornerNum uint, r, g, b float64) {
+	C.cairo_mesh_pattern_set_corner_color_rgb(pat.pat, C.uint(cornerNum), C.double(r), C.double(g), C.double(b))
+}
+
+func (pat Pattern) MeshSetCornerColorRGBA(cornerNum uint, r, g, b, a float64) {
+	C.cairo_mesh_pattern_set_corner_color_rgba(pat.pat, C.uint(cornerNum), C.double(r), C.double(g), C.double(b), C.double(a))
+}
+
+// TODO: set_matrix
+// TODO: get_matrix
+
+type Extend C.cairo_extend_t
+const (
+	ExtendNone Extend = C.CAIRO_EXTEND_NONE
+	ExtendRepeat Extend = C.CAIRO_EXTEND_REPEAT
+	ExtendReflect Extend = C.CAIRO_EXTEND_REFLECT
+	ExtendPad Extend = C.CAIRO_EXTEND_PAD
+)
+
+func (pat Pattern) SetExtend(extend Extend) {
+	C.cairo_pattern_set_extend(pat.pat, C.cairo_extend_t(extend))
+}
+
+func (pat Pattern) Extend() Extend {
+	return Extend(C.cairo_pattern_get_extend(pat.pat))
+}
+
+// TODO: the rest of the pattern API (line 2900 and down in cairo.h)
+
 // TODO: matrix_t API
 // TODO: region_t API
