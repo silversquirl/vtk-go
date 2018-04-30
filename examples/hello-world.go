@@ -1,6 +1,6 @@
 package main
 
-import "../"
+import "go.vktec.org.uk/vtk"
 
 func main() {
 	root, err := vtk.New()

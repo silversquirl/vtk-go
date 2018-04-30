@@ -1,8 +1,8 @@
 package main
 
 import (
-	".."
-	"../cairo"
+	"go.vktec.org.uk/vtk"
+	"go.vktec.org.uk/vtk/cairo"
 )
 
 func main() {

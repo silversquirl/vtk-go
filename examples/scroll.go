@@ -1,7 +1,7 @@
 package main
 
 import (
-	"../"
+	"go.vktec.org.uk/vtk"
 	"math"
 )
 

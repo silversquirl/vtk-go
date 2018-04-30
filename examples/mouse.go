@@ -1,6 +1,6 @@
 package main
 
-import "../"
+import "go.vktec.org.uk/vtk"
 
 func main() {
 	root, err := vtk.New()
@@ -39,7 +39,8 @@ func main() {
 	win.SetEventHandler(vtk.MouseMove, func(ev vtk.Event) {
 		m := ev.(vtk.MouseMoveEvent)
 		if vtk.HasMod(m, vtk.LeftButton) {
-			ex, ey = m.Pos()
+			mx, my := m.Pos()
+			ex, ey = float64(mx), float64(my)
 			win.Redraw()
 		}
 	})
@@ -47,7 +48,8 @@ func main() {
 	win.SetEventHandler(vtk.MousePress, func(ev vtk.Event) {
 		b := ev.(vtk.MouseButtonEvent)
 		if b.Btn() == vtk.LeftButton {
-			sx, sy = b.Pos()
+			bx, by := b.Pos()
+			sx, sy = float64(bx), float64(by)
 			ex, ey = sx, sy
 			win.Redraw()
 		}
