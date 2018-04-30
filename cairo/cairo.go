@@ -1,4 +1,4 @@
-package cairo
+package cairo // import "go.vktec.org.uk/vtk/cairo"
 
 /*
 #cgo pkg-config: cairo

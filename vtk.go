@@ -1,4 +1,4 @@
-package vtk
+package vtk // import "go.vktec.org.uk/vtk"
 
 /*
 #cgo pkg-config: vtk
@@ -14,10 +14,10 @@ static struct vtk_scroll_event vtk_event_get_scroll(vtk_event ev) { return ev.sc
 import "C"
 
 import (
-	"./cairo"
 	"errors"
 	"unsafe"
 
+	"go.vktec.org.uk/vtk/cairo"
 	// TODO: remove this dependency
 	"github.com/mattn/go-pointer"
 )
