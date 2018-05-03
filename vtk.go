@@ -172,6 +172,13 @@ const (
 	Right    Key = C.VTK_K_RIGHT
 )
 
+func KeyFromString(s string) Key {
+	cs := C.CString(s)
+	k := Key(C.vtk_key_from_string(cs))
+	C.free(unsafe.Pointer(cs))
+	return k
+}
+
 type Modifier C.vtk_modifiers
 
 type EventWithModifiers interface {
@@ -193,6 +200,13 @@ const (
 	MiddleButton Modifier = C.VTK_M_MIDDLE_BTN
 	RightButton  Modifier = C.VTK_M_RIGHT_BTN
 )
+
+func ModifierFromString(s string) Modifier {
+	cs := C.CString(s)
+	m := Modifier(C.vtk_modifier_from_string(cs))
+	C.free(unsafe.Pointer(cs))
+	return m
+}
 
 type KeyEvent C.struct_vtk_key_event
 
