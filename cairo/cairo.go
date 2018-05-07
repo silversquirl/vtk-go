@@ -7,6 +7,8 @@ package cairo // import "go.vktec.org.uk/vtk/cairo"
 */
 import "C"
 
+import "image/color"
+
 type CCairoT *C.cairo_t
 type Cairo struct{ Cr *C.cairo_t }
 type Pattern struct{ pat *C.cairo_pattern_t }
@@ -43,6 +45,25 @@ func (cr Cairo) SetSourceRGB(r, g, b float64) {
 
 func (cr Cairo) SetSourceRGBA(r, g, b, a float64) {
 	C.cairo_set_source_rgba(cr.Cr, C.double(r), C.double(g), C.double(b), C.double(a))
+}
+
+func (cr Cairo) SetSourceColor(c color.Color) {
+	ir, ig, ib, ia := c.RGBA()
+	r, g, b, a := float64(ir), float64(ig), float64(ib), float64(ia)
+
+	// Scale the values to 0.0-1.0
+	r /= 0xffff
+	g /= 0xffff
+	b /= 0xffff
+	a /= 0xffff
+
+	// Un-premultiply the values
+	r /= a
+	g /= a
+	b /= a
+
+	// Set the source
+	cr.SetSourceRGBA(r, g, b, a)
 }
 
 // TODO: set_source_surface

@@ -1,6 +1,9 @@
 package main
 
-import "go.vktec.org.uk/vtk"
+import (
+	"go.vktec.org.uk/vtk"
+	"image/color/palette"
+)
 
 func main() {
 	root, err := vtk.New()
@@ -26,12 +29,12 @@ func main() {
 		width, height := win.Size()
 		w, h := float64(width), float64(height)
 		cr.Rectangle(0, 0, w, h)
-		cr.SetSourceRGB(0, 0, 0)
+		cr.SetSourceColor(palette.Plan9[0])
 		cr.Fill()
 
 		cr.MoveTo(sx, sy)
 		cr.LineTo(ex, ey)
-		cr.SetSourceRGB(1, 1, 1)
+		cr.SetSourceColor(palette.Plan9[255])
 		cr.SetLineWidth(2)
 		cr.Stroke()
 	})
